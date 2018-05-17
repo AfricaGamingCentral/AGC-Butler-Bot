@@ -10,19 +10,16 @@ import sys
 # Here you can modify the bot's prefix and description and wether it sends help in direct messages or not.
 client = Bot(description="XP Bot", command_prefix="*", pm_help=False)
 
-# open private key file
 key_file = open('./key.txt', 'r')
 if not key_file:
     print('File key.txt can\'t be found')
     sys.exit(0)
 
-# read private key from file
 api_key = key_file.read().splitlines()[0]
 if not api_key:
     print('No API key in discord_key.txt')
     sys.exit(0)
 
-# close private key file
 key_file.close()
 
 
@@ -48,27 +45,23 @@ async def on_ready():
 @client.event
 async def on_message(message):
     await client.wait_until_ready()
+    server = client.get_server('380248307848577035')
     if message.content.startswith('*test'):
-        server = client.get_server('380248307848577035')
-        server_roles = server.roles
-        server_members = server.members
-        for role in server_roles:
-            print (role)
-        else:
-            pass
+        server_members = server.members                     #? List of Members ON SERVER                            
         for member in server_members:
-            if member.bot == False & "Gold" in member.roles == True:
-                    print(member)
+            if member.bot == False:
+                mem_roles = server.get_member(member.id).roles
+                for role in mem_roles:
+                    if role.name == 'Master' or role.name == 'Platinum' or role.name == 'Diamond' or role.name == 'Gold':
+                        print(member,role)
             else:
                 pass
         await client.send_message(message.channel, 'Info printed to terminal')
-    
-    elif message.content.startswith('*msgcount'):
-        counter = 0
-        tmp = await client.send_message(message.channel, 'Calculating messages...')
-        async for log in client.logs_from(message.channel, limit=500):
-            if log.author == message.author:
-                counter += 1
-        
-        await client.edit_message (tmp, 'You have {} messages.'.format(counter))
+
+    elif message.content.startswith('*embed'):
+        nadeko = server.get_member('116275390695079945')
+        async for message in client.logs_from(message.channel):
+            if user.member.id == '116275390695079945'
+
+
 client.run(str(api_key))

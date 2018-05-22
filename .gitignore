@@ -105,4 +105,6 @@ venv.bak/
 .mypy_cache/
 
 # key
-XP_Decay_BOT/key\.txt
+AGC_Butler_BETA-v1/key\.txt
+*.png
+

@@ -6,6 +6,7 @@ from discord.ext import commands
 import platform
 import sys
 import sqlite3
+import MySQLdb
 import datetime
 import os
 import json
@@ -30,11 +31,10 @@ async def on_ready():
 
 #! GLOBAL VARIABLES FOR SERVER
 
-AGC_user_sqlite_file = './AGC_user_db.sqlite'
-conn = sqlite3.connect(AGC_user_sqlite_file)
+conn = MySQLdb.connect("localhost", "butler", "Zer045kin!", "agc_butler")
 c = conn.cursor()
 
-key_file = open('./key.txt', 'r')
+key_file = open('./api_key.txt', 'r')
 if not key_file:
     print('File key.txt can\'t be found')
     sys.exit(0)
@@ -49,33 +49,33 @@ key_file.close()
 msg_buffer = []
 nadeko_lb = []
 
-spawn_date = datetime.datetime.today().date().__format__("%Y-%m-%d")
-server = None
-server_members = None
-dev_spam = client.get_channel(444385387109023745)
-
-
 async def spin_db(message):
     await client.wait_until_ready()
     today = datetime.datetime.today().date().__format__("%Y-%m-%d")
     server_member_total = 0
-    c.execute('DELETE from user_info')
-    async for member in server_members:
+    server = client.get_guild(458888334291369987)
+    server_members = server.members
+    spawn_date = datetime.datetime.today().date().__format__("%Y-%m-%d")
+    dev_spam = client.get_channel(458904356016619521)
+    print(server)
+    c.execute('DELETE from user_information')
+    for member in server_members:
         if member.bot == False:
-            c.execute('INSERT INTO user_info VALUES(?,?)', (member.id, today))
+            c.execute('INSERT INTO user_information(user_discord_id, user_nickname, user_total_xp, user_current_level, user_last_msg) VALUES(%s,%s,%s,%s,%s)', (member.id, member.name, 0, 0, today))
             server_member_total += 1
             print(member.id, today)
     conn.commit()
-    c.execute('SELECT count("user_id") FROM user_info')
+    c.execute('SELECT count("user_id") FROM user_information')
     db_count = c.fetchall()
     (user_id,) = db_count[0]
-    await client.send_message(message.channel, 'Database has been filled with members from Server: '+str(server)+'\nServer Member Count: '+str(server_member_total)+'\nDatabase Member Count: '+str(user_id))
+    await dev_spam.send('Database has been filled with members from Server: '+str(server)+'\nServer Member Count: '+str(server_member_total)+'\nDatabase Member Count: '+str(user_id))
 
 # async def backup_db(message):
 
 # async def spawn_webclient(message):
 # https://discord.gg/tC4EedV
 
+# async def clear_messages(message, user, num_msgs)
 
 async def db_update(message, msg_buffer):
 
